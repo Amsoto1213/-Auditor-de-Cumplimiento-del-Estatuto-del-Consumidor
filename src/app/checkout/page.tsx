@@ -5,6 +5,7 @@ import { currentUser } from "@/lib/auth";
 import { cop, getPlan, priceBreakdown, IVA } from "@/lib/site";
 import { CheckoutForm } from "@/components/forms/CheckoutForm";
 import { wompiEnabled } from "@/lib/payments";
+import { TrackOnMount } from "@/components/Track";
 
 export const metadata: Metadata = { title: "Resumen de compra" };
 
@@ -41,7 +42,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
             <div className="flex justify-between border-t border-slate-200 pt-3 text-lg font-bold text-slate-900"><dt>Total a pagar</dt><dd>{cop(b.total)}</dd></div>
           </dl>
           <div className="mt-6">
-            <CheckoutForm plan={plan.id} wompi={wompiEnabled()} />
+            <CheckoutForm plan={plan.id} wompi={wompiEnabled()} value={b.total} />
+            <TrackOnMount name="begin_checkout" params={{ currency: "COP", value: b.total, plan: plan.id }} />
           </div>
         </div>
       </div>

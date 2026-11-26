@@ -1,11 +1,15 @@
 "use client";
 import { ActionForm } from "@/components/forms/ActionForm";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { track } from "@/lib/analytics";
 import { joinPartners, type FormState } from "@/app/actions/public";
 
 export function PartnerForm() {
   const [state, action, pending] = useActionState<FormState, FormData>(joinPartners, null);
+  useEffect(() => {
+    if (state?.ok) track("generate_lead", { lead_type: "aliado" });
+  }, [state?.ok]);
   if (state?.ok) return <p role="status" className="rounded-lg bg-green-50 p-5 text-green-800">✓ {state.message}</p>;
   return (
     <ActionForm action={action} className="grid gap-4 sm:grid-cols-2">

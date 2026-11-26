@@ -4,8 +4,10 @@ import { WaitlistForm } from "@/components/WaitlistForm";
 import { countDocs } from "@/lib/db";
 import { PLANS, SMMLV_2026, cop } from "@/lib/site";
 import { RULES } from "@/lib/audit/rules";
+import { JsonLd } from "@/components/JsonLd";
 
 export const dynamic = "force-dynamic";
+export const metadata = { alternates: { canonical: "/" } };
 
 const maxFine = 2000 * SMMLV_2026;
 const basic = PLANS.find((p) => p.id === "basico")!.priceYear;
@@ -222,6 +224,7 @@ export default async function Home() {
               </details>
             ))}
           </div>
+          <JsonLd data={{ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: FAQ.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }} />
           <p className="mt-6 text-xs text-slate-500">
             <sup>1</sup> Gómez, M. y Rodríguez, C. (2021). Análisis del cumplimiento del deber de información en las tiendas virtuales de las mipymes en Colombia. Vniversitas, Universidad Javeriana.
           </p>

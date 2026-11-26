@@ -24,6 +24,17 @@ import type { FormState } from "./public";
 
 const str = (f: FormData, k: string, max = 200) => String(f.get(k) ?? "").trim().slice(0, max);
 
+function parseUtm(s: string): Record<string, string> | undefined {
+  try {
+    const o = JSON.parse(s.slice(0, 1000)) as Record<string, unknown>;
+    const out: Record<string, string> = {};
+    for (const k of ["source", "medium", "campaign", "term", "content", "landing"]) if (typeof o[k] === "string") out[k] = (o[k] as string).slice(0, 80);
+    return Object.keys(out).length ? out : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 function safeNext(n: string) {
   return n.startsWith("/") && !n.startsWith("//") ? n : "/panel";
 }
@@ -62,6 +73,7 @@ export async function register(_: FormState, f: FormData): Promise<FormState> {
     plan: "gratis",
     company: storeUrl ? { legalName: "", nit: "", address: "", city: "", phone: "", email, storeUrl } : undefined,
     consent: { terms, data, marketing, at: now, ip: await ipHash() },
+    utm: parseUtm(String(f.get("utm") ?? "")),
     createdAt: now,
     role: isAdminEmail(email) ? "admin" : "user",
   };

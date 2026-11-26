@@ -1,12 +1,16 @@
 "use client";
 import { ActionForm } from "@/components/forms/ActionForm";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { track } from "@/lib/analytics";
 import { joinWaitlist, type FormState } from "@/app/actions/public";
 import { BETA_GOAL } from "@/lib/site";
 
 export function WaitlistForm({ initialCount }: { initialCount: number }) {
   const [state, action, pending] = useActionState<FormState, FormData>(joinWaitlist, null);
+  useEffect(() => {
+    if (state?.ok) track("join_waitlist");
+  }, [state?.ok]);
   const count = Number(state?.data?.count ?? initialCount);
   const pct = Math.min(100, Math.round((count / BETA_GOAL) * 100));
   return (

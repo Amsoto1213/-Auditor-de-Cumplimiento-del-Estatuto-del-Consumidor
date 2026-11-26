@@ -24,6 +24,15 @@ Equipo: Melissa Torres Forero (PO), Daniela Benavides Padilla (SM), Amilcar Soto
 
 Adelantos del backlog posterior: blog con 3 guías (HU-23), programa de aliados (HU-40), métricas del embudo en `/admin` (HU-24/HU-39), historial de auditorías e impresión a PDF (HU-35/HU-21), límite de escaneos por IP (HU-28).
 
+## Requisitos de la entrega final
+
+- **Legales y datos:** páginas en `/legal/*`, `/pqrs`, aviso de cookies con consentimiento.
+- **Seguridad de pagos:** `/seguridad` (Wompi, firma de integridad, webhook verificado, HTTPS).
+- **Multicanalidad:** escáner gratis, lista Beta, blog, boletín, WhatsApp, redes sociales, aliados y landing de anuncios; cada registro guarda su canal (UTM).
+- **SEO/SEM:** metadatos, Open Graph, sitemap, robots, schema.org, blog y landing `/escaner-gratis?utm_source=google&utm_medium=cpc&utm_campaign=multas-sic`.
+- **Analítica:** Google Analytics 4 (`G-Y1RR7PTG8K`, configurable con `NEXT_PUBLIC_GA_ID`) con eventos del embudo, cargado solo con consentimiento; panel `/admin`.
+- **Cambios documentados:** `docs/CAMBIOS.md` y borrador de correo al docente en `docs/CORREO_DOCENTE.md`.
+
 ## Cómo probar la demo
 
 1. Abra la página de inicio y escanee una tienda (por ejemplo, cualquier tienda Shopify o WooCommerce).

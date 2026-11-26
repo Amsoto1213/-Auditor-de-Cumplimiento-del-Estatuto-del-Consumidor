@@ -12,14 +12,28 @@ type Row = Record<string, unknown> & { createdAt?: string };
 export default async function Page() {
   const u = await requireUser("/admin");
   if (u.role !== "admin") notFound();
-  const [scans, users, payments, waitlist, pqrs, partners] = await Promise.all([
+  const [scans, users, payments, waitlist, pqrs, partners, newsletter] = await Promise.all([
     listDocs<Row>("scans"),
     listDocs<Row>("users"),
     listDocs<Payment>("payments"),
     listDocs<Row>("waitlist"),
     listDocs<Row>("pqrs"),
     listDocs<Row>("partners"),
+    listDocs<Row>("newsletter"),
   ]);
+  type U = { source?: string; medium?: string; campaign?: string };
+  const src = (r: Row) => ((r.utm as U | undefined)?.source ?? "directo").toLowerCase();
+  const userSrc = new Map(users.map((x) => [String(x.id), src(x)]));
+  const channels = new Map<string, { scans: number; users: number; paid: number }>();
+  const bump = (k: string, f: "scans" | "users" | "paid") => {
+    const c = channels.get(k) ?? { scans: 0, users: 0, paid: 0 };
+    c[f]++;
+    channels.set(k, c);
+  };
+  scans.forEach((x) => bump(src(x), "scans"));
+  users.forEach((x) => bump(src(x), "users"));
+  payments.filter((x) => x.status === "APPROVED").forEach((x) => bump(userSrc.get(x.userId) ?? "directo", "paid"));
+  const channelRows = [...channels.entries()].sort((a, b) => b[1].scans + b[1].users - (a[1].scans + a[1].users));
   const approved = payments.filter((p) => p.status === "APPROVED");
   const revenue = approved.reduce((s, p) => s + p.total, 0);
   const conv = scans.length ? ((approved.length / scans.length) * 100).toFixed(1) : "0";
@@ -69,8 +83,21 @@ export default async function Page() {
               </div>
             ))}
           </div>
-          <p className="mt-4 text-xs text-slate-500">Agencias aliadas pre-registradas: {partners.length} (meta: 10 convenios).</p>
+          <p className="mt-4 text-xs text-slate-500">Agencias aliadas pre-registradas: {partners.length} (meta: 10 convenios) · Suscriptores del boletín: {newsletter.length}.</p>
         </div>
+      </div>
+      <div className="card relative overflow-x-auto">
+        <table className="w-full min-w-[600px] text-sm">
+          <caption className="p-5 text-left font-semibold text-slate-900">Canales de captación (multicanalidad · fuente UTM o referido)</caption>
+          <thead><tr className="border-y border-slate-200 bg-slate-50 text-left"><th className="p-3">Canal / fuente</th><th className="p-3">Escaneos</th><th className="p-3">Registros</th><th className="p-3">Pagos</th></tr></thead>
+          <tbody className="divide-y divide-slate-100">
+            {channelRows.length === 0 && <tr><td colSpan={4} className="p-3 text-slate-500">Sin datos todavía.</td></tr>}
+            {channelRows.map(([k, c]) => (
+              <tr key={k}><td className="p-3 font-medium">{k}</td><td className="p-3">{c.scans}</td><td className="p-3">{c.users}</td><td className="p-3">{c.paid}</td></tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="px-5 pb-5 text-xs text-slate-500">El detalle de visitas, páginas y eventos (scan_complete, sign_up, begin_checkout, purchase) se analiza en Google Analytics 4.</p>
       </div>
       <div className="card relative overflow-x-auto">
         <table className="w-full min-w-[600px] text-sm">

@@ -7,6 +7,17 @@ import { sendMail } from "@/lib/mail";
 
 export type FormState = { ok?: boolean; error?: string; message?: string; data?: Record<string, string | number> } | null;
 
+function parseUtm(s: string): Record<string, string> | undefined {
+  try {
+    const o = JSON.parse(s.slice(0, 1000)) as Record<string, unknown>;
+    const out: Record<string, string> = {};
+    for (const k of ["source", "medium", "campaign"]) if (typeof o[k] === "string") out[k] = (o[k] as string).slice(0, 80);
+    return Object.keys(out).length ? out : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 const str = (f: FormData, k: string, max = 200) => String(f.get(k) ?? "").trim().slice(0, max);
 
 /** Lista de espera Beta (HU-08). */
@@ -29,6 +40,7 @@ export async function joinWaitlist(_: FormState, f: FormData): Promise<FormState
     name,
     email,
     storeUrl,
+    utm: parseUtm(String(f.get("utm") ?? "")),
     consent: { data: true, at: new Date().toISOString(), ip: await ipHash(), text: "Autorizo el tratamiento de mis datos personales según la política de tratamiento de datos." },
     createdAt: new Date().toISOString(),
   });
@@ -72,4 +84,19 @@ export async function joinPartners(_: FormState, f: FormData): Promise<FormState
   const id = await sha256(email);
   await putDoc("partners", id, { agency, name, email, city, stores, createdAt: new Date().toISOString(), consentAt: new Date().toISOString() });
   return { ok: true, message: `Gracias, ${name.split(" ")[0]}. Recibimos la solicitud de ${agency}; un asesor le contactará para formalizar el convenio.` };
+}
+
+/** Boletín de novedades normativas (HU-46, canal de correo electrónico). */
+export async function subscribeNewsletter(_: FormState, f: FormData): Promise<FormState> {
+  if (!(await rateLimit("newsletter", 8, 60 * 60_000))) return { error: "Demasiados intentos. Intente más tarde." };
+  const email = normalizeEmail(str(f, "email", 160));
+  if (!isEmail(email)) return { error: "Escriba un correo válido." };
+  if (f.get("consent") !== "on") return { error: "Debe autorizar el envío de información." };
+  await putDoc("newsletter", await sha256(email), {
+    email,
+    utm: parseUtm(String(f.get("utm") ?? "")),
+    consentAt: new Date().toISOString(),
+    ip: await ipHash(),
+  });
+  return { ok: true, message: "¡Suscrito! Le enviaremos las novedades normativas una vez al mes." };
 }

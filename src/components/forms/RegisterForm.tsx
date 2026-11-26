@@ -1,13 +1,17 @@
 "use client";
 import { ActionForm } from "@/components/forms/ActionForm";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { track } from "@/lib/analytics";
 import { register } from "@/app/actions/auth";
 import type { FormState } from "@/app/actions/public";
 import { DemoLink } from "../AuthShell";
 
 export function RegisterForm({ storeUrl }: { storeUrl?: string }) {
   const [state, action, pending] = useActionState<FormState, FormData>(register, null);
+  useEffect(() => {
+    if (state?.ok) track("sign_up", { method: "email" });
+  }, [state?.ok]);
   if (state?.ok)
     return (
       <div role="status" className="text-sm text-slate-700">

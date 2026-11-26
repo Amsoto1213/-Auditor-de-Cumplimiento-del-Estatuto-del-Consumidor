@@ -29,6 +29,7 @@ export interface User {
   consent: { terms: boolean; data: boolean; marketing: boolean; at: string; ip: string };
   createdAt: string;
   role: "user" | "admin";
+  utm?: Record<string, string>;
 }
 
 const COOKIE = "al_session";

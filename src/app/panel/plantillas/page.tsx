@@ -3,6 +3,7 @@ import { requireUser, hasPaidPlan } from "@/lib/auth";
 import { CompanyForm } from "@/components/forms/CompanyForm";
 import { TEMPLATES } from "@/lib/templates";
 import { UpgradeCard } from "@/components/Upgrade";
+import { DownloadLink } from "@/components/DownloadLink";
 
 export const metadata: Metadata = { title: "Empresa y plantillas" };
 
@@ -34,7 +35,7 @@ export default async function Page() {
                 <h3 className="mt-2 font-semibold text-slate-900">{t.title}</h3>
                 <p className="text-xs font-medium text-brand-600">{t.laws}</p>
                 <p className="mt-2 flex-1 text-sm text-slate-600">{t.description}</p>
-                <a href={`/api/plantillas/${t.id}`} className="btn-primary mt-4 !py-2" download={t.file}>Descargar .docx</a>
+                <DownloadLink href={`/api/plantillas/${t.id}`} file={t.file} />
               </li>
             ))}
           </ul>

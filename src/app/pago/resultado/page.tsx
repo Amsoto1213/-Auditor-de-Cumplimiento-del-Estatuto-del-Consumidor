@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth";
 import { applyPaymentStatus, fetchWompiTransaction, getPayment } from "@/lib/payments";
 import { cop, getPlan } from "@/lib/site";
+import { TrackOnMount } from "@/components/Track";
 
 export const metadata: Metadata = { title: "Resultado del pago", robots: { index: false } };
 
@@ -29,6 +30,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ r
         <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl text-white ${ok ? "bg-green-600" : pending ? "bg-amber-500" : "bg-red-600"}`}>
           {ok ? "✓" : pending ? "…" : "✕"}
         </div>
+        {ok && <TrackOnMount name="purchase" onceKey={`purchase-${p.reference}`} params={{ transaction_id: p.reference, currency: "COP", value: p.total, tax: p.iva, plan: p.plan }} />}
         <h1 className="mt-4 text-2xl font-bold text-slate-900">
           {ok ? "¡Pago aprobado!" : pending ? "Pago en proceso" : "Pago no aprobado"}
         </h1>

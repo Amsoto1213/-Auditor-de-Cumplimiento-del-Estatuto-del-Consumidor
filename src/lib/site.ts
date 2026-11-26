@@ -16,6 +16,14 @@ export const SITE = {
   hours: "Lunes a viernes, 8:00 a. m. a 5:00 p. m.",
   sicUrl: "https://www.sic.gov.co",
   sicPqrsUrl: "https://www.sic.gov.co/atencion-al-ciudadano",
+  // Canales de contacto y redes (datos de ejemplo, configurables por variables de entorno).
+  whatsapp: process.env.NEXT_PUBLIC_WHATSAPP ?? "573001234567",
+  social: {
+    instagram: process.env.NEXT_PUBLIC_INSTAGRAM ?? "https://www.instagram.com/auditorlegal.co",
+    facebook: process.env.NEXT_PUBLIC_FACEBOOK ?? "https://www.facebook.com/auditorlegal.co",
+    linkedin: process.env.NEXT_PUBLIC_LINKEDIN ?? "https://www.linkedin.com/company/auditorlegal-co",
+    tiktok: process.env.NEXT_PUBLIC_TIKTOK ?? "https://www.tiktok.com/@auditorlegal.co",
+  },
   university: "Universidad de Cartagena · Programa de Ingeniería de Sistemas · Comercio Electrónico",
   team: [
     { name: "Melissa Torres Forero", role: "Product Owner" },
@@ -24,6 +32,9 @@ export const SITE = {
     { name: "Marlon Brandon Mier Gutierrez", role: "Developer" },
   ],
 };
+
+// Google Analytics 4 (se carga solo si el visitante acepta las cookies de analítica).
+export const GA_ID = process.env.NEXT_PUBLIC_GA_ID ?? "G-Y1RR7PTG8K";
 
 // Salario mínimo mensual legal vigente 2026 (Decreto del Gobierno Nacional).
 export const SMMLV_2026 = 1_750_905;

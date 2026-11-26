@@ -1,11 +1,15 @@
 "use client";
 import { ActionForm } from "@/components/forms/ActionForm";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { track } from "@/lib/analytics";
 import { submitPqrs, type FormState } from "@/app/actions/public";
 
 export function PqrsForm() {
   const [state, action, pending] = useActionState<FormState, FormData>(submitPqrs, null);
+  useEffect(() => {
+    if (state?.ok) track("pqrs_submit");
+  }, [state?.ok]);
   if (state?.ok)
     return (
       <div role="status" className="text-center">

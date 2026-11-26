@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { POSTS } from "@/lib/blog";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE } from "@/lib/site";
 
 export function generateStaticParams() {
   return POSTS.map((p) => ({ slug: p.slug }));
@@ -10,7 +12,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const p = POSTS.find((x) => x.slug === slug);
-  return p ? { title: p.title, description: p.excerpt } : {};
+  return p ? { title: p.title, description: p.excerpt, alternates: { canonical: `/blog/${p.slug}` }, openGraph: { type: "article", title: p.title, description: p.excerpt } } : {};
 }
 
 export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
@@ -19,6 +21,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   if (!p) notFound();
   return (
     <div className="container-page max-w-3xl py-12">
+      <JsonLd data={{ "@context": "https://schema.org", "@type": "Article", headline: p.title, description: p.excerpt, datePublished: p.date, inLanguage: "es-CO", author: { "@type": "Organization", name: SITE.name }, publisher: { "@type": "Organization", name: SITE.legalName } }} />
       <Link href="/blog" className="text-sm text-brand-600">← Blog</Link>
       <h1 className="mt-3 text-3xl font-bold text-slate-900">{p.title}</h1>
       <p className="mt-2 text-sm text-slate-500">{new Date(p.date).toLocaleDateString("es-CO", { dateStyle: "long", timeZone: "UTC" })} · {p.minutes} min de lectura</p>

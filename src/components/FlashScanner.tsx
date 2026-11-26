@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { FlashResult } from "@/lib/audit/types";
 import { RISK_STYLE, ScoreRing, TrafficLight } from "./Risk";
+import { getUtm, track } from "@/lib/analytics";
 
 const STEPS = [
   "Conectando con su tienda…",
@@ -51,6 +52,7 @@ export function FlashScanner({ compact = false }: { compact?: boolean }) {
     setStep(0);
     setElapsed(0);
     const t0 = Date.now();
+    track("scan_start");
     timer.current = setInterval(() => {
       const s = (Date.now() - t0) / 1000;
       setElapsed(s);
@@ -62,12 +64,17 @@ export function FlashScanner({ compact = false }: { compact?: boolean }) {
       const res = await fetch("/api/scan", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, utm: getUtm() }),
         signal: ctrl.signal,
       });
       const json = await res.json();
-      if (!res.ok) setError(json.error ?? "No fue posible analizar el sitio.");
-      else setResult(json);
+      if (!res.ok) {
+        setError(json.error ?? "No fue posible analizar el sitio.");
+        track("scan_error");
+      } else {
+        setResult(json);
+        track("scan_complete", { risk_level: json.level, score: json.score, platform: json.platform });
+      }
     } catch {
       setError("El análisis superó los 30 segundos. Es posible que el sitio sea lento o bloquee el rastreo automático. Intente de nuevo.");
     } finally {
@@ -162,7 +169,7 @@ function FlashResultView({ r }: { r: FlashResult & { id: string } }) {
         <p className="text-sm text-slate-700">
           El informe completo revisa <strong>21 reglas</strong> de la Ley 1480, el Decreto 587 y la Ley 1581, con evidencia, explicación sencilla y plantillas para corregir cada hallazgo.
         </p>
-        <Link href={`/registro?url=${encodeURIComponent(r.url)}`} className="btn-primary shrink-0">
+        <Link href={`/registro?url=${encodeURIComponent(r.url)}`} onClick={() => track("cta_full_report", { risk_level: r.level })} className="btn-primary shrink-0">
           Ver informe completo
         </Link>
       </div>

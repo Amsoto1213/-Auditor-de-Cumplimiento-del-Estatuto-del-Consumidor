@@ -25,6 +25,16 @@ const STORIES: [string, string, string, string][] = [
   ["HU-18", "Checkout y pago con Wompi (sandbox)", "Resumen con subtotal, IVA 19 % y total; Wompi Web Checkout, webhook firmado y activación del plan", "/checkout?plan=basico"],
 ];
 
+const REQS: [string, string, string?][] = [
+  ["Requisitos mínimos legales de un CE en Colombia", "Identificación del vendedor (razón social, NIT, dirección, teléfono, correo), términos y condiciones, precios con IVA, derecho de retracto y reversión del pago (Ley 1480, Decreto 587), PQRS con radicado y enlace a la SIC. Comercio electrónico y mensajes de datos (Ley 527 de 1999).", "/legal/terminos"],
+  ["Política de protección de datos", "Política de tratamiento de datos, aviso de privacidad, autorizaciones sin casillas premarcadas con fecha y hora, y política de cookies (Ley 1581 de 2012, Decreto 1377 de 2013).", "/legal/datos"],
+  ["Seguridad en métodos de pago", "Wompi (tarjeta, PSE, Nequi) con firma de integridad SHA-256, webhook con checksum verificado, validación del valor pagado, HTTPS/HSTS, contraseñas bcrypt y sesiones httpOnly.", "/seguridad"],
+  ["Formas de captación de clientes (multicanalidad)", "Escáner gratuito (freemium), lista de espera Beta, blog, boletín por correo, WhatsApp, redes sociales, programa de aliados (agencias) y landing de anuncios; cada registro guarda su canal de origen (UTM).", "/aliados"],
+  ["Estrategias SEO / SEM", "SEO: metadatos y Open Graph, sitemap.xml, robots.txt, datos estructurados schema.org (Organization, SoftwareApplication, FAQPage, Article), URLs canónicas y blog. SEM: landing /escaner-gratis con mensajes por campaña y medición UTM para Google Ads y redes.", "/escaner-gratis?utm_source=google&utm_medium=cpc&utm_campaign=multas-sic"],
+  ["Análisis de impacto (Google Analytics)", "Google Analytics 4 con consentimiento previo y eventos: scan_start, scan_complete, cta_full_report, sign_up, join_waitlist, begin_checkout, add_payment_info, purchase, file_download, newsletter_subscribe, contact. Panel interno de embudo y canales en /admin."],
+  ["Alcance del Product Backlog y cambios documentados", "HU-01 a HU-18 completas. Cambios de tecnología y adelantos del backlog documentados en docs/CAMBIOS.md del repositorio."],
+];
+
 export default function Page() {
   return (
     <div className="container-page py-12">
@@ -49,6 +59,17 @@ export default function Page() {
                 <td className="p-3 text-slate-600">{d}</td>
                 <td className="p-3"><span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800">Hecho</span></td>
               </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <h2 className="mt-12 text-xl font-semibold text-slate-900">Requisitos de la entrega final</h2>
+      <div className="card relative mt-4 overflow-x-auto">
+        <table className="w-full min-w-[720px] text-sm">
+          <thead><tr className="border-b border-slate-200 bg-slate-50 text-left"><th className="p-3">Requisito</th><th className="p-3">Implementación</th></tr></thead>
+          <tbody className="divide-y divide-slate-100 align-top">
+            {REQS.map(([r, d, href]) => (
+              <tr key={r}><td className="p-3 font-medium text-slate-900">{r}</td><td className="p-3 text-slate-600">{d} {href && <Link href={href} className="text-brand-600 underline">Ver</Link>}</td></tr>
             ))}
           </tbody>
         </table>

@@ -6,12 +6,24 @@ import { currentUser } from "@/lib/auth";
 
 export const maxDuration = 60;
 
+function cleanUtm(u: unknown): Record<string, string> | null {
+  if (!u || typeof u !== "object") return null;
+  const out: Record<string, string> = {};
+  for (const k of ["source", "medium", "campaign", "term", "content", "landing"]) {
+    const v = (u as Record<string, unknown>)[k];
+    if (typeof v === "string" && v) out[k] = v.slice(0, 80);
+  }
+  return out;
+}
+
 /** Escáner flash gratuito (HU-05, HU-06, HU-07). No requiere registro. */
 export async function POST(req: Request) {
   let url = "";
+  let utm: Record<string, string> | null = null;
   try {
-    const body = (await req.json()) as { url?: string };
+    const body = (await req.json()) as { url?: string; utm?: Record<string, unknown> };
     url = String(body.url ?? "").slice(0, 300);
+    utm = cleanUtm(body.utm);
   } catch {
     return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
   }
@@ -30,6 +42,7 @@ export async function POST(req: Request) {
       level: result.level,
       score: result.score,
       userId: user?.id ?? null,
+      utm,
       ip: await ipHash(),
       createdAt: new Date().toISOString(),
     }).catch(() => undefined);

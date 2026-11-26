@@ -2,10 +2,11 @@
 import { ActionForm } from "@/components/forms/ActionForm";
 import Link from "next/link";
 import { useActionState } from "react";
+import { track } from "@/lib/analytics";
 import { startCheckout } from "@/app/actions/checkout";
 import type { FormState } from "@/app/actions/public";
 
-export function CheckoutForm({ plan, wompi }: { plan: string; wompi: boolean }) {
+export function CheckoutForm({ plan, wompi, value }: { plan: string; wompi: boolean; value: number }) {
   const [state, action, pending] = useActionState<FormState, FormData>(startCheckout, null);
   return (
     <ActionForm action={action} className="space-y-4">
@@ -18,7 +19,7 @@ export function CheckoutForm({ plan, wompi }: { plan: string; wompi: boolean }) 
         </span>
       </label>
       {state?.error && <p role="alert" className="text-sm text-red-700">{state.error}</p>}
-      <button className="btn-primary w-full !py-4 text-base" disabled={pending}>{pending ? "Redirigiendo al pago…" : "Pagar con Wompi"}</button>
+      <button className="btn-primary w-full !py-4 text-base" disabled={pending} onClick={() => track("add_payment_info", { currency: "COP", value, items: [{ item_id: plan, item_name: `Plan ${plan}` }] } as never)}>{pending ? "Redirigiendo al pago…" : "Pagar con Wompi"}</button>
       <p className="text-center text-xs text-slate-500">
         Tarjeta de crédito o débito · PSE · Nequi. {wompi ? "Ambiente de pruebas (sandbox) de Wompi." : "Ambiente de pruebas: simulador sandbox."}
       </p>
