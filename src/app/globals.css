@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-500: #3b82f6;
+  --color-brand-600: #1d4ed8;
+  --color-brand-700: #1e40af;
+  --color-brand-800: #1e3a8a;
+  --color-brand-900: #172554;
+  --color-ink: #0f172a;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: #f8fafc;
+  color: var(--color-ink);
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 text-sm font-semibold transition focus:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-primary { @apply btn bg-brand-600 text-white hover:bg-brand-700 focus-visible:ring-brand-100; }
+@utility btn-secondary { @apply btn border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 focus-visible:ring-slate-200; }
+@utility btn-dark { @apply btn bg-slate-900 text-white hover:bg-slate-800; }
+@utility input {
+  @apply w-full rounded-lg border border-slate-300 bg-white px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 focus:border-brand-600 focus:outline-none focus:ring-4 focus:ring-brand-100;
+}
+@utility label { @apply mb-1 block text-sm font-medium text-slate-700; }
+@utility card { @apply relative rounded-2xl border border-slate-200 bg-white shadow-sm; }
+@utility container-page { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
+@layer components {
+.prose-legal h2 { @apply mt-8 mb-3 text-xl font-bold text-slate-900; }
+.prose-legal h3 { @apply mt-6 mb-2 text-lg font-semibold text-slate-900; }
+.prose-legal p { @apply mb-3 leading-7 text-slate-700; }
+.prose-legal ul { @apply mb-4 list-disc space-y-1 pl-6 text-slate-700; }
+.prose-legal ol { @apply mb-4 list-decimal space-y-1 pl-6 text-slate-700; }
+.prose-legal a { @apply text-brand-600 underline; }
+}
