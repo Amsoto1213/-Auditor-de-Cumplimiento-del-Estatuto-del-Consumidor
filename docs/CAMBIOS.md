@@ -16,7 +16,7 @@ Se entregan las 18 historias comprometidas para el 1 de diciembre de 2026 (HU-01
 | Rastreo web | Playwright + BeautifulSoup | fetch + Cheerio (equivalente de BeautifulSoup en JavaScript) | Playwright no cabe en las funciones de Vercel. Shopify y WooCommerce entregan su HTML renderizado desde el servidor, por lo que no se requiere un navegador para leer los textos legales. |
 | Base de datos y autenticación | Supabase (PostgreSQL, Auth, RLS) | Vercel Blob privado + autenticación propia (bcrypt, JWT en cookie httpOnly, verificación de correo, recuperación de contraseña) | Evita la pausa por inactividad del plan gratuito de Supabase y su límite de correos. El control de acceso por propietario reemplaza a RLS: cada usuario solo puede leer sus auditorías y pagos. |
 | Documentos | python-docx | librería `docx` (JavaScript) | Mismo resultado (.docx) dentro de la misma aplicación. |
-| Pagos | Wompi sandbox | Wompi Web Checkout con firma de integridad y webhook firmado; simulador sandbox mientras se configuran las llaves | Sin cambio de proveedor. |
+| Pagos | Wompi sandbox | Wompi Web Checkout (sandbox) con firma de integridad, webhook firmado y activación automática del plan; probado con una compra aprobada | Sin cambio de proveedor ni de alcance. |
 | Frontend, CI/CD | Next.js + Tailwind, GitHub Actions, Vercel | Sin cambios | — |
 
 ## 3. Funcionalidades adelantadas del backlog posterior

@@ -22,7 +22,7 @@ const STORIES: [string, string, string, string][] = [
   ["HU-15", "Ley 1581 de datos personales", "Política, aviso, autorización en formularios y casillas premarcadas", "/normativa"],
   ["HU-16", "Panel de resultados", "Puntaje 0-100, semáforo, hallazgos por norma con Legal Design y filtro por riesgo", "/panel"],
   ["HU-17", "Tres plantillas en Word", "Formulario de la empresa y descarga .docx prellenada", "/panel/plantillas"],
-  ["HU-18", "Checkout y pago con Wompi (sandbox)", "Resumen con subtotal, IVA 19 % y total; Wompi Web Checkout, webhook firmado y activación del plan", "/checkout?plan=basico"],
+  ["HU-18", "Checkout y pago con Wompi (sandbox)", "Resumen con subtotal, IVA 19 % y total; checkout oficial de Wompi (sandbox) con tarjeta, PSE, Nequi y más; webhook firmado y activación automática del plan", "/checkout?plan=basico"],
 ];
 
 const REQS: [string, string, string?][] = [

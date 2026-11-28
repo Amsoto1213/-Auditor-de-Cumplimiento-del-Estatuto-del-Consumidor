@@ -38,8 +38,10 @@ Adelantos del backlog posterior: blog con 3 guías (HU-23), programa de aliados 
 1. Abra la página de inicio y escanee una tienda (por ejemplo, cualquier tienda Shopify o WooCommerce).
 2. Clic en **Ver informe completo** → cree una cuenta. Si no hay servidor de correo configurado, la app muestra en pantalla el enlace de verificación (*modo demostración*).
 3. Ingrese, vaya a **Precios → Elegir plan Básico**, acepte los términos y pague.
-   - Sin llaves de Wompi se abre el **simulador sandbox**: tarjeta `4242 4242 4242 4242` = aprobada, `4111 1111 1111 1111` = rechazada; Nequi `3991111111` = aprobado.
-   - Con llaves de Wompi sandbox se redirige al checkout oficial de Wompi (use las tarjetas de prueba de Wompi).
+   - Se abre el **checkout oficial de Wompi en modo de pruebas (sandbox)**, con tarjeta, PSE, Nequi, DaviPlata, Bancolombia y QR.
+   - Tarjeta de prueba aprobada: `4242 4242 4242 4242`; rechazada: `4111 1111 1111 1111`. Cualquier fecha futura, CVC `123`, cualquier nombre y documento, y marque las dos casillas de aceptación.
+   - Al terminar, Wompi regresa a la app (`/pago/resultado`) y envía el aviso automático (`/api/wompi/webhook`); el plan queda activo por 12 meses y el pago aparece en **Plan y pagos**.
+   - Si se quitan las llaves de Wompi (`WOMPI_PUBLIC_KEY`, `WOMPI_INTEGRITY_SECRET`, `WOMPI_EVENTS_SECRET`), la app usa un simulador sandbox de respaldo con las mismas tarjetas de prueba.
 4. En **Nueva auditoría** escriba la URL de la tienda → informe completo con semáforo.
 5. En **Empresa y plantillas** complete los datos y descargue los tres .docx.
 6. Si su correo está en `ADMIN_EMAILS`, verá **/admin** con el embudo de conversión.
@@ -50,7 +52,7 @@ Adelantos del backlog posterior: blog con 3 guías (HU-23), programa de aliados 
 - **Motor de auditoría** (`src/lib/audit/`): `crawler.ts` (rastreo con protección SSRF, robots.txt, pausas, límite de 20 páginas, rutas conocidas de Shopify/WooCommerce/Tiendanube), `engine.ts` (parseo con Cheerio, puntaje y semáforo), `rules.ts` (matriz normativa).
 - **Almacenamiento**: Vercel Blob en modo **privado** (documentos JSON accesibles solo desde el servidor); en desarrollo, carpeta `.data/`.
 - **Autenticación**: contraseñas con hash bcrypt, sesión JWT firmada en cookie `httpOnly` + `Secure`, verificación de correo y tokens de un solo uso. Cada auditoría solo la puede leer su propietario.
-- **Pagos**: Wompi Web Checkout (firma de integridad SHA-256), confirmación por redirección consultando el API de Wompi y por webhook con verificación del checksum.
+- **Pagos**: Wompi Web Checkout en sandbox (firma de integridad SHA-256), confirmación por redirección consultando el API de Wompi y por webhook (`/api/wompi/webhook`, URL de eventos configurada en Wompi) con verificación del checksum y del valor pagado. Probado de punta a punta con una compra aprobada.
 - **Documentos**: librería `docx` para generar las plantillas Word.
 - Modelo de datos: usuario (con empresa y autorizaciones con fecha), auditoría (con hallazgos), regla, plan, pago, lista de espera, PQRS, aliados.
 
