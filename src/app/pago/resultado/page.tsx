@@ -9,14 +9,18 @@ import { TrackOnMount } from "@/components/Track";
 export const metadata: Metadata = { title: "Resultado del pago", robots: { index: false } };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ ref?: string; id?: string }> }) {
-  const { ref = "", id } = await searchParams;
-  const u = await requireUser(`/pago/resultado?ref=${ref}`);
+  const sp = await searchParams;
+  // Tolera "?ref=AL-...?id=123" y el regreso de Wompi solo con "?id=".
+  let ref = (sp.ref ?? "").split("?")[0];
+  const id = sp.id ?? (sp.ref?.includes("?id=") ? sp.ref.split("?id=")[1] : undefined);
+  const u = await requireUser(`/pago/resultado?${ref ? `ref=${ref}` : `id=${id ?? ""}`}`);
+  const tx = id ? await fetchWompiTransaction(id) : null;
+  if (!ref && tx) ref = tx.reference;
   let p = await getPayment(ref);
   if (!p || p.userId !== u.id) notFound();
 
   // Confirmación por redirección: se consulta la transacción en el API de Wompi.
-  if (p.status === "PENDING" && id) {
-    const tx = await fetchWompiTransaction(id);
+  if (p.status === "PENDING" && tx) {
     if (tx && tx.reference === p.reference && tx.amount_in_cents === p.amountInCents && tx.status !== "PENDING") {
       p = (await applyPaymentStatus(p.reference, tx.status, { transactionId: tx.id, method: tx.payment_method_type })) ?? p;
     }

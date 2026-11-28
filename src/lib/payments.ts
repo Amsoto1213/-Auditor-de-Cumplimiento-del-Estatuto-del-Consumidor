@@ -70,7 +70,8 @@ export async function wompiCheckoutUrl(p: Payment, email: string) {
     "amount-in-cents": String(p.amountInCents),
     reference: p.reference,
     "signature:integrity": signature,
-    "redirect-url": `${appUrl()}/pago/resultado?ref=${p.reference}`,
+    // Wompi agrega ?id=<transacción> a esta URL; la referencia se obtiene de la transacción.
+    "redirect-url": `${appUrl()}/pago/resultado`,
     "customer-data:email": email,
   });
   return `https://checkout.wompi.co/p/?${params.toString()}`;
